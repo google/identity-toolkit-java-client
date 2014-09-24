@@ -62,7 +62,7 @@ public class GitkitClientTest extends TestCase {
         .setServiceAccountEmail("dev@developer.gserviceaccount.com")
         .setGoogleClientId("test-client-id.apps.googleusercontent.com")
         .setHttpSender(mockSender)
-        .setWidgetUrl("/gitkit")
+        .setWidgetUrl("http://example.com:80/gitkit")
         .build();
   }
 
@@ -160,9 +160,6 @@ public class GitkitClientTest extends TestCase {
     when(mockRequest.getParameter("challenge")).thenReturn("what is the number");
     when(mockRequest.getParameter("response")).thenReturn("8888");
     when(mockRequest.getRemoteUser()).thenReturn("1.1.1.1");
-    when(mockRequest.getScheme()).thenReturn("http");
-    when(mockRequest.getServerName()).thenReturn("example.com");
-    when(mockRequest.getServerPort()).thenReturn(80);
     String expectedApiUrl = GitkitClient.GITKIT_API_BASE + "getOobConfirmationCode";
     when(mockSender.post(eq(expectedApiUrl), anyString(), eq(headers)))
         .thenReturn("{'oobCode':'fake-oob-code'}");

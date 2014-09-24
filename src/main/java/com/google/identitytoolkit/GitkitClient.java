@@ -397,8 +397,7 @@ public class GitkitClient {
     try {
       JSONObject result = rpcHelper.getOobCode(resetReq);
       String code = result.getString("oobCode");
-      String httpServer = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
-      return httpServer + widgetUrl + "?mode=" + modeParam + "&oobCode="
+      return widgetUrl + "?mode=" + modeParam + "&oobCode="
           + URLEncoder.encode(code, "UTF-8");
     } catch (UnsupportedEncodingException e) {
       // should never happen

@@ -18,6 +18,7 @@ package com.google.identitytoolkit;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -74,8 +75,10 @@ public class HttpSender {
         connection.setRequestMethod("GET");
       }
 
-      BufferedReader reader = new BufferedReader(
-          new InputStreamReader(connection.getInputStream()));
+      InputStream inputStream = connection.getResponseCode() == 200
+          ? connection.getInputStream()
+          : connection.getErrorStream();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
       StringBuilder response = new StringBuilder();
       String line;
       while ((line = reader.readLine()) != null) {

@@ -77,10 +77,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>3.0-alpha-1</version>
-      <scope>compile</scope>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-servlet-api</artifactId>
+      <version>8.0.12</version>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>

@@ -17,9 +17,9 @@
   </licenses>
   <developers>
     <developer>
-			<name>Jin Liu</name>
-			<id>liujin-google</id>
-		</developer>
+      <name>Jin Liu</name>
+      <id>liujin-google</id>
+    </developer>
   </developers>
   <url>https://developers.google.com/identity-toolkit/v3/</url>
 

@@ -13,7 +13,7 @@
   <scm>
     <url>https://github.com/google/identity-toolkit-java-client</url>
     <connection>scm:git:git://github.com/google/identity-toolkit-java-client.git</connection>
-    <developerConnection>scm:git:git@github.com:google/identity-toolkit-java-client.git</developerConnection>
+    <developerConnection>scm:git:cslink@github.com:google/identity-toolkit-java-client.git</developerConnection>
   </scm>
 
   <properties>

@@ -144,11 +144,14 @@ public class GitkitClientTest extends TestCase {
         .setLocalId("1111")
         .setName("New Name");
     String expectedApiUrl = GitkitClient.GITKIT_API_BASE + "setAccountInfo";
-    String expectedPost = "{\"localId\":\"1111\",\"displayName\":\"New Name\"}";
-    when(mockSender.post(expectedApiUrl, expectedPost, headers))
+    ArgumentCaptor<String> postCaptor = ArgumentCaptor.forClass(String.class);
+    when(mockSender.post(eq(expectedApiUrl), postCaptor.capture(), eq(headers)))
         .thenReturn("{'localId':'1111','displayName':'New Name','email':'1111@example.com'}");
 
     gitkitClient.updateUser(user);
+    JSONObject requestBody = new JSONObject(postCaptor.getValue());
+    assertEquals(user.getLocalId(), requestBody.getString("localId"));
+    assertEquals(user.getName(), requestBody.getString("displayName"));
   }
 
   public void testGetOobCode() throws Exception {

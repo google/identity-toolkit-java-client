@@ -115,7 +115,7 @@ public class RpcHelper {
     try {
       // Uses idToken to make the server call to GITKit
       JSONObject params = new JSONObject().put("idToken", idToken);
-      return invokeGitkitApi("getAccountInfo", params, null);
+      return invokeGoogle2LegOauthApi("getAccountInfo", params);
     } catch (JSONException e) {
       throw new GitkitServerException("OAuth API failed");
     }

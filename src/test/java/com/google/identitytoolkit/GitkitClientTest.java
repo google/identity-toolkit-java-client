@@ -174,4 +174,23 @@ public class GitkitClientTest extends TestCase {
         "http://example.com:80/gitkit?mode=resetPassword&oobCode=fake-oob-code",
         oobResponse.getOobUrl().get());
   }
+
+  public void testGetOobCodeInvalidCaptchaCode() throws Exception {
+    Cookie[] gitkitCookie = {new Cookie("gtoken", "fake-token")};
+    HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+    when(mockRequest.getCookies()).thenReturn(gitkitCookie);
+    when(mockRequest.getParameter("action")).thenReturn("resetPassword");
+    when(mockRequest.getParameter("email")).thenReturn("1111@example.com");
+    when(mockRequest.getParameter("challenge")).thenReturn("what is the number");
+    when(mockRequest.getParameter("response")).thenReturn("8888");
+    when(mockRequest.getRemoteUser()).thenReturn("1.1.1.1");
+    String expectedApiUrl = GitkitClient.GITKIT_API_BASE + "getOobConfirmationCode";
+    when(mockSender.post(eq(expectedApiUrl), anyString(), eq(headers)))
+        .thenReturn("{ \"error\": { \"code\": \"4xx\", \"message\": \"CAPTCHA_CHECK_FAILED\" }}");
+
+    GitkitClient.OobResponse oobResponse = gitkitClient.getOobResponse(mockRequest);
+    // the client collapses the error message down to a simple error:value
+    assertEquals("{\"error\": \"CAPTCHA_CHECK_FAILED\" }", oobResponse.getResponseBody());
+
+  }
 }

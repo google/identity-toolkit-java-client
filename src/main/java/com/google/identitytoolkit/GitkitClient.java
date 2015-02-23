@@ -437,7 +437,7 @@ public class GitkitClient {
    */
   public class OobResponse {
     private static final String SUCCESS_RESPONSE = "{\"success\": true}";
-    private static final String ERROR_PREFIX = "{\"error\": ";
+    private static final String ERROR_PREFIX = "{\"error\": \"";
     private final String email;
     private final String newEmail;
     private final Optional<String> oobUrl;
@@ -446,7 +446,7 @@ public class GitkitClient {
     private final String recipient;
 
     public OobResponse(String responseBody) {
-      this(null, null, Optional.<String>absent(), null, ERROR_PREFIX + responseBody + " }");
+      this(null, null, Optional.<String>absent(), null, ERROR_PREFIX + responseBody + "\" }");
     }
 
     public OobResponse(String email, String newEmail, String oobUrl, OobAction oobAction)

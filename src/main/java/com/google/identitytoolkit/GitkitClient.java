@@ -446,7 +446,7 @@ public class GitkitClient {
     private final String recipient;
 
     public OobResponse(String responseBody) {
-      this(null, null, Optional.<String>absent(), null, ERROR_PREFIX + responseBody + " }");
+      this(null, null, Optional.<String>absent(), null, ERROR_PREFIX + "\"" +  responseBody + "\" }");
     }
 
     public OobResponse(String email, String newEmail, String oobUrl, OobAction oobAction)

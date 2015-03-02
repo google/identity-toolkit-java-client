@@ -87,10 +87,10 @@ public class GitkitClient {
     this.widgetUrl = widgetUrl;
     this.cookieName = cookieName;
   }
-  
+
   /**
    * Constructs a Gitkit client from a JSON config file
-   * 
+   *
    * @param configPath Path to JSON configuration file
    * @return Gitkit client
    */
@@ -115,24 +115,38 @@ public class GitkitClient {
    * Verifies a Gitkit token.
    *
    * @param token token string to be verified.
-   * @return Gitkit user if token is valid.
+   * @return the JSON object for the payload of the token if the token is valid.
    * @throws GitkitClientException if token has invalid signature
    */
-  public GitkitUser validateToken(String token) throws GitkitClientException {
+  public JsonObject validateTokenToJson(String token) throws GitkitClientException {
     if (token == null) {
       return null;
     }
     try {
-      JsonObject jsonToken = tokenHelper.verifyAndDeserialize(token).getPayloadAsJsonObject();
-      return new GitkitUser()
-          .setLocalId(jsonToken.get(JsonTokenHelper.ID_TOKEN_USER_ID).getAsString())
-          .setEmail(jsonToken.get(JsonTokenHelper.ID_TOKEN_EMAIL).getAsString())
-          .setCurrentProvider(jsonToken.has(JsonTokenHelper.ID_TOKEN_PROVIDER)
-              ? jsonToken.get(JsonTokenHelper.ID_TOKEN_PROVIDER).getAsString()
-              : null);
+      return tokenHelper.verifyAndDeserialize(token).getPayloadAsJsonObject();
     } catch (SignatureException e) {
       throw new GitkitClientException(e);
     }
+  }
+
+  /**
+   * Verifies a Gitkit token.
+   *
+   * @param token token string to be verified.
+   * @return Gitkit user if token is valid.
+   * @throws GitkitClientException if token has invalid signature
+   */
+  public GitkitUser validateToken(String token) throws GitkitClientException {
+    JsonObject jsonToken = validateTokenToJson(token);
+    if (jsonToken == null) {
+      return null;
+    }
+    return new GitkitUser()
+        .setLocalId(jsonToken.get(JsonTokenHelper.ID_TOKEN_USER_ID).getAsString())
+        .setEmail(jsonToken.get(JsonTokenHelper.ID_TOKEN_EMAIL).getAsString())
+        .setCurrentProvider(jsonToken.has(JsonTokenHelper.ID_TOKEN_PROVIDER)
+            ? jsonToken.get(JsonTokenHelper.ID_TOKEN_PROVIDER).getAsString()
+            : null);
   }
 
   /**

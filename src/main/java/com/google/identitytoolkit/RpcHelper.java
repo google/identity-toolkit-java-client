@@ -38,12 +38,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.xml.soap.MimeHeaders;
 
 /**
  * Wraps the http interactions for Gitkit APIs.
@@ -286,17 +284,17 @@ public class RpcHelper {
             (RSAPrivateKey) keyStore.getKey("privatekey", "notasecret".toCharArray()));
       }
     } catch (KeyStoreException e) {
-      log.warning("can not initialize service account signer: " + e);
+      log.log(Level.WARNING, "can not initialize service account signer: " + e.getMessage(), e);
     } catch (CertificateException e) {
-      log.warning("can not initialize service account signer: " + e);
+      log.log(Level.WARNING, "can not initialize service account signer: " + e.getMessage(), e);
     } catch (UnrecoverableKeyException e) {
-      log.warning("can not initialize service account signer: " + e);
+      log.log(Level.WARNING, "can not initialize service account signer: " + e.getMessage(), e);
     } catch (NoSuchAlgorithmException e) {
-      log.warning("can not initialize service account signer: " + e);
+      log.log(Level.WARNING, "can not initialize service account signer: " + e.getMessage(), e);
     } catch (IOException e) {
-      log.warning("can not initialize service account signer: " + e);
+      log.log(Level.WARNING, "can not initialize service account signer: " + e.getMessage(), e);
     } catch (InvalidKeyException e) {
-      log.warning("can not initialize service account signer: " + e);
+      log.log(Level.WARNING, "can not initialize service account signer: " + e.getMessage(), e);
     }
     log.warning("service account is set to null due to: email = " + serviceAccountEmail
         + "keystream = " + keyStream);
@@ -349,7 +347,7 @@ public class RpcHelper {
         }
       }
     } catch (JSONException e) {
-      log.warning("Server response exception: " + e.getMessage());
+      log.log(Level.WARNING, "Server response exception: " + e.getMessage(), e);
     }
     throw new GitkitServerException("null error code from Gitkit server");
   }

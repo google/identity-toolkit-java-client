@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -77,9 +78,9 @@ public class GitkitVerifierManager implements VerifierProvider {
         verifiers.put(kid, new GitkitTokenVerifier(certs.get(kid)));
       }
     } catch (IOException e) {
-      log.warning("unable to find token verifier: " + e.getMessage());
+      log.log(Level.WARNING, "unable to find token verifier: " + e.getMessage(), e);
     } catch (GitkitServerException e) {
-      log.warning("unable to find token verifier: " + e.getMessage());
+      log.log(Level.WARNING, "unable to find token verifier: " + e.getMessage(), e);
     }
   }
 

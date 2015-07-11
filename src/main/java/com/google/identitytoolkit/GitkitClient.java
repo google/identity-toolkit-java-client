@@ -146,6 +146,12 @@ public class GitkitClient {
         .setEmail(jsonToken.get(JsonTokenHelper.ID_TOKEN_EMAIL).getAsString())
         .setCurrentProvider(jsonToken.has(JsonTokenHelper.ID_TOKEN_PROVIDER)
             ? jsonToken.get(JsonTokenHelper.ID_TOKEN_PROVIDER).getAsString()
+            : null)
+        .setName(jsonToken.has(JsonTokenHelper.ID_TOKEN_DISPLAY_NAME)
+            ? jsonToken.get(JsonTokenHelper.ID_TOKEN_DISPLAY_NAME).getAsString()
+            : null)
+        .setPhotoUrl(jsonToken.has(JsonTokenHelper.ID_TOKEN_PHOTO_URL)
+            ? jsonToken.get(JsonTokenHelper.ID_TOKEN_PHOTO_URL).getAsString()
             : null);
   }
 

@@ -33,6 +33,8 @@ public class JsonTokenHelper {
   public static final String ID_TOKEN_EMAIL = "email";
   public static final String ID_TOKEN_USER_ID = "user_id";
   public static final String ID_TOKEN_PROVIDER = "provider_id";
+  public static final String ID_TOKEN_DISPLAY_NAME = "display_name";
+  public static final String ID_TOKEN_PHOTO_URL = "photo_url";
   private final JsonTokenParser parser;
 
   public JsonTokenHelper(String audience, RpcHelper rpcHelper, String serverApiKey) {

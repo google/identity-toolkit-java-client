@@ -181,13 +181,23 @@ public class RpcHelper {
     }
   }
 
-  public JSONObject uploadAccount(String hashAlgorithm, byte[] hashKey, List<GitkitUser> accounts)
-      throws GitkitClientException, GitkitServerException {
+  public JSONObject uploadAccount(String hashAlgorithm, byte[] hashKey, List<GitkitUser> accounts,
+                                  byte[] saltSeparator, Integer rounds, Integer memoryCost)
+          throws GitkitClientException, GitkitServerException {
     try {
       JSONObject params = new JSONObject()
           .put("hashAlgorithm", hashAlgorithm)
           .put("signerKey", BaseEncoding.base64Url().encode(hashKey))
           .put("users", toJsonArray(accounts));
+        if (saltSeparator != null) {
+            params.put("saltSeparator", BaseEncoding.base64Url().encode(saltSeparator));
+        }
+        if (rounds != null) {
+            params.put("rounds", rounds);
+        }
+        if (memoryCost != null) {
+            params.put("memoryCost", memoryCost);
+        }
       return invokeGoogle2LegOauthApi("uploadAccount", params);
     } catch (JSONException e) {
       throw new GitkitServerException(e);

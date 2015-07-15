@@ -313,7 +313,26 @@ public class GitkitClient {
    */
   public void uploadUsers(String hashAlgorithm, byte[] hashKey, List<GitkitUser> users)
       throws GitkitServerException, GitkitClientException {
-    rpcHelper.uploadAccount(hashAlgorithm, hashKey, users);
+      uploadUsers(hashAlgorithm, hashKey, users, null, null, null);
+  }
+
+  /**
+   * Uploads multiple user accounts to Gitkit server.
+   *
+   * @param hashAlgorithm hash algorithm. Supported values are HMAC_SHA256, HMAC_SHA1, HMAC_MD5,
+   *                      PBKDF_SHA1, MD5 and SCRYPT.
+   * @param hashKey key of hash algorithm
+   * @param users list of user accounts to be uploaded
+   * @param saltSeparator the salt separator
+   * @param rounds rounds for hash calculation. Used by scrypt and similar algorithms.
+   * @param memoryCost memory cost for hash calculation. Used by scrypt similar algorithms.
+   * @throws GitkitClientException for invalid request
+   * @throws GitkitServerException for server error
+   */
+  public void uploadUsers(String hashAlgorithm, byte[] hashKey, List<GitkitUser> users,
+                          byte[] saltSeparator, Integer rounds, Integer memoryCost)
+          throws GitkitServerException, GitkitClientException {
+      rpcHelper.uploadAccount(hashAlgorithm, hashKey, users, saltSeparator, rounds, memoryCost);
   }
 
   /**

@@ -97,6 +97,29 @@ public class RpcHelper {
       throw new GitkitServerException(e);
     }
   }
+  
+  public JSONObject verifyPassword(String email, String password, String pendingIdToken,
+                                   String captchaChallenge, String captchaResponse)
+      throws GitkitServerException, GitkitClientException {
+    try {
+      JSONObject params = new JSONObject()
+          .put("email", email)
+          .put("password", password);
+      if (pendingIdToken != null) {
+        params.put("pendingIdToken", pendingIdToken);
+      }
+      if (captchaChallenge != null) {
+        params.put("captchaChallenge", captchaChallenge);
+      }
+      if (captchaResponse != null) {
+        params.put("captchaResponse", captchaResponse);
+      }
+      return invokeGoogle2LegOauthApi("verifyPassword", params);
+    } catch (JSONException e) {
+      throw new GitkitServerException(e);
+    }
+  }
+  
 
   public JSONObject getOobCode(JSONObject resetReq)
       throws GitkitClientException, GitkitServerException {

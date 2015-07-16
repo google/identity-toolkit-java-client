@@ -176,6 +176,79 @@ public class GitkitClient {
     }
     return null;
   }
+  
+  /**
+   * Verifies the user entered password at Gitkit server.
+   *
+   * @param email The email of the user
+   * @param password The password inputed by the user
+   * @param pendingIdToken The GITKit token for the non-trusted IDP, which is to be confirmed by the user
+   * @param captchaChallenge The captcha challenge
+   * @param captchaResponse Response to the captcha
+   * @return the verify password response.
+   * @throws GitkitClientException for invalid request
+   * @throws GitkitServerException for server error
+   */
+  public VerifyPasswordResponse verifyPassword(String email, String password, String pendingIdToken,
+                                               String captchaChallenge, String captchaResponse)
+      throws GitkitClientException, GitkitServerException {
+    try {
+      JSONObject result = rpcHelper.verifyPassword(email, password, pendingIdToken, captchaChallenge, captchaResponse);
+      return new VerifyPasswordResponse(result.getString("localId"), result.getString("email"),
+                                        result.getString("displayName"), result.getString("idToken"),
+                                        result.getBoolean("registered"), result.getString("photoUrl"));
+    } catch (JSONException e) {
+      throw new GitkitServerException(e);
+    }
+  }
+
+  /**
+   * Wrapper class containing the verify password responses.
+   */
+  public class VerifyPasswordResponse {
+    private final String localId;
+    private final String email;
+    private final String displayName;
+    private final String idToken;
+    private final boolean registered;
+    private final String photoUrl;
+
+    public VerifyPasswordResponse(String localId, String email, String displayName, String idToken,
+                                  boolean registered, String photoUrl)
+    {
+        this.localId = localId;
+        this.email = email;
+        this.displayName = displayName;
+        this.idToken = idToken;
+        this.registered = registered;
+        this.photoUrl = photoUrl;
+    }
+
+    public String getLocalId() {
+        return localId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public String getIdToken() {
+        return idToken;
+    }
+
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+  }
+  
 
   /**
    * Gets user info from GITkit service using Gitkit token. Can be used to verify a Gitkit token

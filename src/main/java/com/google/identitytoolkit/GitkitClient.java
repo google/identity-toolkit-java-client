@@ -178,6 +178,41 @@ public class GitkitClient {
   }
 
   /**
+   * Verifies the user entered password at Gitkit server.
+   *
+   * @param email The email of the user
+   * @param password The password inputed by the user
+   * @param pendingIdToken The GITKit token for the non-trusted IDP, which is to be confirmed by the user
+   * @param captchaResponse Response to the captcha
+   * @return Gitkit user if password is valid.
+   * @throws GitkitClientException for invalid request
+   * @throws GitkitServerException for server error
+   */
+  public GitkitUser verifyPassword(String email, String password, String pendingIdToken, String captchaResponse)
+      throws GitkitClientException, GitkitServerException {
+    try {
+      JSONObject result = rpcHelper.verifyPassword(email, password, pendingIdToken, captchaResponse);
+      return jsonToUser(result);
+    } catch (JSONException e) {
+      throw new GitkitServerException(e);
+    }
+  }
+
+  /**
+   * Verifies the user entered password at Gitkit server.
+   *
+   * @param email The email of the user
+   * @param password The password inputed by the user
+   * @return Gitkit user if password is valid.
+   * @throws GitkitClientException for invalid request
+   * @throws GitkitServerException for server error
+   */
+  public GitkitUser verifyPassword(String email, String password)
+      throws GitkitClientException, GitkitServerException {
+      return verifyPassword(email, password, null, null);
+  }
+
+  /**
    * Gets user info from GITkit service using Gitkit token. Can be used to verify a Gitkit token
    * remotely.
    *

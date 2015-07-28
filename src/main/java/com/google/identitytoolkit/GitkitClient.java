@@ -183,22 +183,22 @@ public class GitkitClient {
    * @param email The email of the user
    * @param password The password inputed by the user
    * @param pendingIdToken The GITKit token for the non-trusted IDP, which is to be confirmed by the user
+   * @param captchaResponse Response to the captcha
    * @return Gitkit user if password is valid.
    * @throws GitkitClientException for invalid request
    * @throws GitkitServerException for server error
    */
-  public GitkitUser verifyPassword(String email, String password, String pendingIdToken)
+  public GitkitUser verifyPassword(String email, String password, String pendingIdToken, String captchaResponse)
       throws GitkitClientException, GitkitServerException {
     try {
-      JSONObject result = rpcHelper.verifyPassword(email, password, pendingIdToken);
+      JSONObject result = rpcHelper.verifyPassword(email, password, pendingIdToken, captchaResponse);
       return jsonToUser(result);
-
     } catch (JSONException e) {
       throw new GitkitServerException(e);
     }
   }
   
-    /**
+  /**
    * Verifies the user entered password at Gitkit server.
    *
    * @param email The email of the user
@@ -209,8 +209,7 @@ public class GitkitClient {
    */
   public GitkitUser verifyPassword(String email, String password)
       throws GitkitClientException, GitkitServerException {
-
-      return verifyPassword(email, password, null);
+      return verifyPassword(email, password, null, null);
   }
 
   /**

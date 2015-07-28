@@ -176,7 +176,7 @@ public class GitkitClient {
     }
     return null;
   }
-  
+
   /**
    * Verifies the user entered password at Gitkit server.
    *
@@ -197,7 +197,7 @@ public class GitkitClient {
       throw new GitkitServerException(e);
     }
   }
-  
+
   /**
    * Verifies the user entered password at Gitkit server.
    *

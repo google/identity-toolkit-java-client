@@ -422,7 +422,7 @@ public class GitkitClient {
     try {
       String action = req.getParameter("action");
       if ("resetPassword".equals(action)) {
-        String oobLink = buildOobLink(req, buildPasswordResetRequest(req), action);
+        String oobLink = buildOobLink(buildPasswordResetRequest(req), action);
         return new OobResponse(
             req.getParameter("email"),
             null,
@@ -432,7 +432,7 @@ public class GitkitClient {
         if (gitkitToken == null) {
           return new OobResponse("login is required");
         } else {
-          String oobLink = buildOobLink(req, buildChangeEmailRequest(req, gitkitToken), action);
+          String oobLink = buildOobLink(buildChangeEmailRequest(req, gitkitToken), action);
           return new OobResponse(
               req.getParameter("oldEmail"),
               req.getParameter("newEmail"),
@@ -447,6 +447,11 @@ public class GitkitClient {
     } catch (GitkitClientException e) {
       return new OobResponse(e.getMessage());
     }
+  }
+
+  public String getEmailVerificationLink(String email)
+      throws GitkitServerException, GitkitClientException {
+    return buildOobLink(buildEmailVerificationRequest(email), "verifyEmail");
   }
 
   public static Builder newBuilder() {
@@ -466,10 +471,10 @@ public class GitkitClient {
     return null;
   }
 
-  private String buildOobLink(HttpServletRequest req, JSONObject resetReq, String modeParam)
+  private String buildOobLink(JSONObject oobReq, String modeParam)
       throws GitkitClientException, GitkitServerException, JSONException {
     try {
-      JSONObject result = rpcHelper.getOobCode(resetReq);
+      JSONObject result = rpcHelper.getOobCode(oobReq);
       String code = result.getString("oobCode");
       return widgetUrl + "?mode=" + modeParam + "&oobCode="
           + URLEncoder.encode(code, "UTF-8");
@@ -496,6 +501,13 @@ public class GitkitClient {
         .put("newEmail", req.getParameter("newEmail"))
         .put("idToken", gitkitToken)
         .put("requestType", "NEW_EMAIL_ACCEPT");
+  }
+
+  private JSONObject buildEmailVerificationRequest(String email)
+      throws JSONException {
+    return new JSONObject()
+        .put("email", email)
+        .put("requestType", "VERIFY_EMAIL");
   }
 
   /**

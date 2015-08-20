@@ -191,6 +191,15 @@ public class GitkitClientTest extends TestCase {
     GitkitClient.OobResponse oobResponse = gitkitClient.getOobResponse(mockRequest);
     // the client collapses the error message down to a simple error:value
     assertEquals("{\"error\": \"CAPTCHA_CHECK_FAILED\" }", oobResponse.getResponseBody());
+  }
 
+  public void testGetEmailVerificationLink() throws Exception {
+    String expectedApiUrl = GitkitClient.GITKIT_API_BASE + "getOobConfirmationCode";
+    when(mockSender.post(eq(expectedApiUrl), anyString(), eq(headers)))
+        .thenReturn("{'oobCode':'fake-oob-code'}");
+
+    assertEquals(
+        "http://example.com:80/gitkit?mode=verifyEmail&oobCode=fake-oob-code",
+        gitkitClient.getEmailVerificationLink("user@example.com"));
   }
 }

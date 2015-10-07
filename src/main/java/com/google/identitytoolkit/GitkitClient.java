@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -110,6 +111,29 @@ public class GitkitClient {
          .setServerApiKey(configData.optString("serverApiKey", null))
          .build();
   }
+
+    /**
+     * Constructs a Gitkit client from a JSON config file
+     *
+     * @param configPath Path to JSON configuration file
+     * @return Gitkit client
+     */
+    public static GitkitClient createFromJson(String configPath, Proxy proxy) throws JSONException, IOException {
+        JSONObject configData =
+                new JSONObject(
+                        StandardCharsets.UTF_8.decode(
+                                ByteBuffer.wrap(Files.readAllBytes(Paths.get(configPath))))
+                                .toString());
+
+        return new GitkitClient.Builder(proxy)
+                .setGoogleClientId(configData.getString("clientId"))
+                .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
+                .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
+                .setWidgetUrl(configData.getString("widgetUrl"))
+                .setCookieName(configData.getString("cookieName"))
+                .setServerApiKey(configData.optString("serverApiKey", null))
+                .build();
+    }
 
   /**
    * Verifies a Gitkit token.
@@ -580,12 +604,20 @@ public class GitkitClient {
    */
   public static class Builder {
     private String clientId;
-    private HttpSender httpSender = new HttpSender();
+    private HttpSender httpSender;
     private String widgetUrl;
     private String serviceAccountEmail;
     private InputStream keyStream;
     private String serverApiKey;
     private String cookieName = "gtoken";
+
+    public  Builder(Proxy proxy) {
+      httpSender = new HttpSender(proxy);
+    }
+
+    public  Builder() {
+      httpSender = new HttpSender();
+    }
 
     public Builder setGoogleClientId(String clientId) {
       this.clientId = clientId;

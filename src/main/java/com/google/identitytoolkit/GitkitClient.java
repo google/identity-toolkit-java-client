@@ -96,20 +96,7 @@ public class GitkitClient {
    * @return Gitkit client
    */
   public static GitkitClient createFromJson(String configPath) throws JSONException, IOException {
-    JSONObject configData =
-        new JSONObject(
-            StandardCharsets.UTF_8.decode(
-                ByteBuffer.wrap(Files.readAllBytes(Paths.get(configPath))))
-                .toString());
-
-    return new GitkitClient.Builder()
-         .setGoogleClientId(configData.getString("clientId"))
-         .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
-         .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
-         .setWidgetUrl(configData.getString("widgetUrl"))
-         .setCookieName(configData.getString("cookieName"))
-         .setServerApiKey(configData.optString("serverApiKey", null))
-         .build();
+    return createFromJson(configPath, null);
   }
 
     /**
@@ -118,14 +105,15 @@ public class GitkitClient {
      * @param configPath Path to JSON configuration file
      * @return Gitkit client
      */
-    public static GitkitClient createFromJson(String configPath, Proxy proxy) throws JSONException, IOException {
-        JSONObject configData =
+  public static GitkitClient createFromJson(String configPath, Proxy proxy) throws JSONException, IOException {
+    JSONObject configData =
                 new JSONObject(
                         StandardCharsets.UTF_8.decode(
                                 ByteBuffer.wrap(Files.readAllBytes(Paths.get(configPath))))
                                 .toString());
 
-        return new GitkitClient.Builder(proxy)
+    return new GitkitClient.Builder()
+                .setProxy(proxy)
                 .setGoogleClientId(configData.getString("clientId"))
                 .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
                 .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
@@ -133,7 +121,7 @@ public class GitkitClient {
                 .setCookieName(configData.getString("cookieName"))
                 .setServerApiKey(configData.optString("serverApiKey", null))
                 .build();
-    }
+  }
 
   /**
    * Verifies a Gitkit token.
@@ -604,19 +592,16 @@ public class GitkitClient {
    */
   public static class Builder {
     private String clientId;
-    private HttpSender httpSender;
+    private HttpSender httpSender = new HttpSender();
     private String widgetUrl;
     private String serviceAccountEmail;
     private InputStream keyStream;
     private String serverApiKey;
     private String cookieName = "gtoken";
 
-    public  Builder(Proxy proxy) {
-      httpSender = new HttpSender(proxy);
-    }
-
-    public  Builder() {
-      httpSender = new HttpSender();
+    public Builder setProxy(Proxy proxy) {
+      this.httpSender = new HttpSender(proxy);
+      return this;
     }
 
     public Builder setGoogleClientId(String clientId) {

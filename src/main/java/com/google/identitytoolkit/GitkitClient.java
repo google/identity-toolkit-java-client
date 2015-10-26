@@ -103,6 +103,7 @@ public class GitkitClient {
      * Constructs a Gitkit client from a JSON config file
      *
      * @param configPath Path to JSON configuration file
+     * @param proxy the Proxy object to use when using Gitkit client behind a proxy
      * @return Gitkit client
      */
   public static GitkitClient createFromJson(String configPath, Proxy proxy) throws JSONException, IOException {

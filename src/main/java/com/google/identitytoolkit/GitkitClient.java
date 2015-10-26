@@ -107,20 +107,20 @@ public class GitkitClient {
      */
   public static GitkitClient createFromJson(String configPath, Proxy proxy) throws JSONException, IOException {
     JSONObject configData =
-                new JSONObject(
-                        StandardCharsets.UTF_8.decode(
-                                ByteBuffer.wrap(Files.readAllBytes(Paths.get(configPath))))
-                                .toString());
+        new JSONObject(
+            StandardCharsets.UTF_8.decode(
+                ByteBuffer.wrap(Files.readAllBytes(Paths.get(configPath))))
+                .toString());
 
     return new GitkitClient.Builder()
-                .setProxy(proxy)
-                .setGoogleClientId(configData.getString("clientId"))
-                .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
-                .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
-                .setWidgetUrl(configData.getString("widgetUrl"))
-                .setCookieName(configData.getString("cookieName"))
-                .setServerApiKey(configData.optString("serverApiKey", null))
-                .build();
+         .setProxy(proxy)
+         .setGoogleClientId(configData.getString("clientId"))
+         .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
+         .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
+         .setWidgetUrl(configData.getString("widgetUrl"))
+         .setCookieName(configData.getString("cookieName"))
+         .setServerApiKey(configData.optString("serverApiKey", null))
+         .build();
   }
 
   /**

@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Map;
 
@@ -32,6 +33,13 @@ import java.util.Map;
 public class HttpSender {
 
   private static final String USER_AGENT = "GitkitJavaClient/1.0";
+  private Proxy proxy = null;
+
+  HttpSender() {}
+
+  HttpSender(Proxy proxy) {
+        this.proxy = proxy;
+    }
 
   /**
    * Sends a HTTP Get request.
@@ -60,7 +68,12 @@ public class HttpSender {
   private String doHttpTransfer(String url, String data, Map<String, String> headers)
       throws IOException{
     try {
-      HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+      HttpURLConnection connection;
+      if(proxy == null)
+        connection = (HttpURLConnection) new URL(url).openConnection();
+      else
+        connection = (HttpURLConnection) new URL(url).openConnection(proxy);
+
       for (Map.Entry<String, String> header : headers.entrySet()) {
         connection.setRequestProperty(header.getKey(), header.getValue());
       }

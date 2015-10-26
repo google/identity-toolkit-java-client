@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -95,6 +96,17 @@ public class GitkitClient {
    * @return Gitkit client
    */
   public static GitkitClient createFromJson(String configPath) throws JSONException, IOException {
+    return createFromJson(configPath, null);
+  }
+
+    /**
+     * Constructs a Gitkit client from a JSON config file
+     *
+     * @param configPath Path to JSON configuration file
+     * @param proxy the Proxy object to use when using Gitkit client behind a proxy
+     * @return Gitkit client
+     */
+  public static GitkitClient createFromJson(String configPath, Proxy proxy) throws JSONException, IOException {
     JSONObject configData =
         new JSONObject(
             StandardCharsets.UTF_8.decode(
@@ -102,6 +114,7 @@ public class GitkitClient {
                 .toString());
 
     return new GitkitClient.Builder()
+         .setProxy(proxy)
          .setGoogleClientId(configData.getString("clientId"))
          .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
          .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
@@ -586,6 +599,11 @@ public class GitkitClient {
     private InputStream keyStream;
     private String serverApiKey;
     private String cookieName = "gtoken";
+
+    public Builder setProxy(Proxy proxy) {
+      this.httpSender = new HttpSender(proxy);
+      return this;
+    }
 
     public Builder setGoogleClientId(String clientId) {
       this.clientId = clientId;

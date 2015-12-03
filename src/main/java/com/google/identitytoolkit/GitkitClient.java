@@ -68,6 +68,7 @@ public class GitkitClient {
    *
    * @param clientId Google oauth2 web application client id. Audience in Gitkit token must match
    *                 this client id.
+   * @param projectId Google developer console project id.
    * @param serviceAccountEmail Google service account email.
    * @param keyStream Google service account private p12 key stream.
    * @param widgetUrl Url of the Gitkit widget, must starting with /.
@@ -77,6 +78,7 @@ public class GitkitClient {
    */
   public GitkitClient(
       String clientId,
+      String projectId,
       String serviceAccountEmail,
       InputStream keyStream,
       String widgetUrl,
@@ -84,7 +86,7 @@ public class GitkitClient {
       HttpSender httpSender,
       String serverApiKey) {
     rpcHelper = new RpcHelper(httpSender, GITKIT_API_BASE, serviceAccountEmail, keyStream);
-    tokenHelper = new JsonTokenHelper(clientId, rpcHelper, serverApiKey);
+    tokenHelper = new JsonTokenHelper(rpcHelper, serverApiKey, projectId, clientId);
     this.widgetUrl = widgetUrl;
     this.cookieName = cookieName;
   }
@@ -95,7 +97,8 @@ public class GitkitClient {
    * @param configPath Path to JSON configuration file
    * @return Gitkit client
    */
-  public static GitkitClient createFromJson(String configPath) throws JSONException, IOException {
+  public static GitkitClient createFromJson(String configPath)
+      throws GitkitClientException, JSONException, IOException {
     return createFromJson(configPath, null);
   }
 
@@ -106,16 +109,20 @@ public class GitkitClient {
      * @param proxy the Proxy object to use when using Gitkit client behind a proxy
      * @return Gitkit client
      */
-  public static GitkitClient createFromJson(String configPath, Proxy proxy) throws JSONException, IOException {
+  public static GitkitClient createFromJson(String configPath, Proxy proxy)
+      throws GitkitClientException, JSONException, IOException {
     JSONObject configData =
         new JSONObject(
             StandardCharsets.UTF_8.decode(
                 ByteBuffer.wrap(Files.readAllBytes(Paths.get(configPath))))
                 .toString());
-
+    if (!configData.has("clientId") && !configData.has("projectId")) {
+      throw new GitkitClientException("Missing projectId or clientId in server configuration.");
+    }
     return new GitkitClient.Builder()
          .setProxy(proxy)
-         .setGoogleClientId(configData.getString("clientId"))
+         .setGoogleClientId(configData.optString("clientId", null))
+         .setProjectId(configData.optString("projectId", null))
          .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
          .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
          .setWidgetUrl(configData.getString("widgetUrl"))
@@ -593,6 +600,7 @@ public class GitkitClient {
    */
   public static class Builder {
     private String clientId;
+    private String projectId;
     private HttpSender httpSender = new HttpSender();
     private String widgetUrl;
     private String serviceAccountEmail;
@@ -607,6 +615,11 @@ public class GitkitClient {
 
     public Builder setGoogleClientId(String clientId) {
       this.clientId = clientId;
+      return this;
+    }
+
+    public Builder setProjectId(String projectId) {
+      this.projectId = projectId;
       return this;
     }
 
@@ -641,7 +654,7 @@ public class GitkitClient {
     }
 
     public GitkitClient build() {
-      return new GitkitClient(clientId, serviceAccountEmail, keyStream, widgetUrl, cookieName,
+      return new GitkitClient(clientId, projectId, serviceAccountEmail, keyStream, widgetUrl, cookieName,
           httpSender, serverApiKey);
     }
   }

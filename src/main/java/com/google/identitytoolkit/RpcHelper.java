@@ -97,7 +97,7 @@ public class RpcHelper {
       throw new GitkitServerException(e);
     }
   }
-  
+
   public JSONObject verifyPassword(String email, String password, String pendingIdToken, String captchaResponse)
       throws GitkitServerException, GitkitClientException {
     try {

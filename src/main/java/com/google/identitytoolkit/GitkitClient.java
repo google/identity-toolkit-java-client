@@ -68,6 +68,30 @@ public class GitkitClient {
    *
    * @param clientId Google oauth2 web application client id. Audience in Gitkit token must match
    *                 this client id.
+   * @param serviceAccountEmail Google service account email.
+   * @param keyStream Google service account private p12 key stream.
+   * @param widgetUrl Url of the Gitkit widget, must starting with /.
+   * @param cookieName Gitkit cookie name. Used to extract Gitkit token from incoming http request.
+   * @param httpSender Concrete http sender when Gitkit client needs to call Gitkit remote API.
+   * @param serverApiKey Server side API key in Google Developer Console.
+   */
+  public GitkitClient(
+      String clientId,
+      String serviceAccountEmail,
+      InputStream keyStream,
+      String widgetUrl,
+      String cookieName,
+      HttpSender httpSender,
+      String serverApiKey) {
+    this(clientId, null, serviceAccountEmail, keyStream, widgetUrl, cookieName,
+          httpSender, serverApiKey);
+  }
+
+  /**
+   * Constructs a Gitkit client.
+   *
+   * @param clientId Google oauth2 web application client id. Audience in Gitkit token must match
+   *                 this client id.
    * @param projectId Google developer console project id.
    * @param serviceAccountEmail Google service account email.
    * @param keyStream Google service account private p12 key stream.
@@ -600,7 +624,7 @@ public class GitkitClient {
    */
   public static class Builder {
     private String clientId;
-    private String projectId;
+    private String projectId = null;
     private HttpSender httpSender = new HttpSender();
     private String widgetUrl;
     private String serviceAccountEmail;

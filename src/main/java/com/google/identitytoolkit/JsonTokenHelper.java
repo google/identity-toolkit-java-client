@@ -16,6 +16,10 @@
 
 package com.google.identitytoolkit;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 
 import net.oauth.jsontoken.Checker;
@@ -25,6 +29,8 @@ import net.oauth.jsontoken.crypto.SignatureAlgorithm;
 import net.oauth.jsontoken.discovery.VerifierProviders;
 
 import java.security.SignatureException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Helps to find a JWT verifier.
@@ -37,11 +43,11 @@ public class JsonTokenHelper {
   public static final String ID_TOKEN_PHOTO_URL = "photo_url";
   private final JsonTokenParser parser;
 
-  public JsonTokenHelper(String audience, RpcHelper rpcHelper, String serverApiKey) {
+  public JsonTokenHelper(RpcHelper rpcHelper, String serverApiKey, String... audiences) {
     VerifierProviders verifierProviders = new VerifierProviders();
     verifierProviders.setVerifierProvider(SignatureAlgorithm.RS256,
         new GitkitVerifierManager(rpcHelper, serverApiKey));
-    parser = new JsonTokenParser(verifierProviders, new AudienceChecker(audience));
+    parser = new JsonTokenParser(verifierProviders, new AudienceChecker(audiences));
   }
 
   public JsonToken verifyAndDeserialize(String token) throws SignatureException {
@@ -53,10 +59,10 @@ public class JsonTokenHelper {
    */
   public static class AudienceChecker implements Checker {
 
-    private final String expectedAudience;
+    private final List<String> expectedAudiences;
 
-    public AudienceChecker(String audience) {
-      this.expectedAudience = audience;
+    public AudienceChecker(String... audiences) {
+      expectedAudiences = Arrays.asList(audiences);
     }
 
     @Override
@@ -64,10 +70,19 @@ public class JsonTokenHelper {
       if (!payload.has(JsonToken.AUDIENCE)) {
         throw new SignatureException("No audience in payload.");
       }
-      String audience = payload.get(JsonToken.AUDIENCE).getAsString();
-      if (!expectedAudience.equals(audience)) {
+      final String audienceInIdToken = payload.get(JsonToken.AUDIENCE).getAsString();
+      Optional<String> matchedAud = Iterables.tryFind(
+          expectedAudiences,
+          new Predicate<String>() {
+            public boolean apply(String aud) {
+              return audienceInIdToken.equals(aud);
+            }
+          });
+
+      if (!matchedAud.isPresent()) {
         throw new SignatureException(String.format(
-            "Invalid audience: %s. Should be: %s", audience, expectedAudience));
+            "Gitkit token audience(%s) doesn't match projectId or clientId in server configuration",
+            audienceInIdToken));
       }
     }
   }

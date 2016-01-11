@@ -175,6 +175,26 @@ public class GitkitClientTest extends TestCase {
         oobResponse.getOobUrl().get());
   }
 
+  public void testGetOobCode_OobCodeMissing() throws Exception {
+    Cookie[] gitkitCookie = {new Cookie("gtoken", "fake-token")};
+    HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+    when(mockRequest.getCookies()).thenReturn(gitkitCookie);
+    when(mockRequest.getParameter("action")).thenReturn("resetPassword");
+    when(mockRequest.getParameter("email")).thenReturn("1111@example.com");
+    when(mockRequest.getParameter("challenge")).thenReturn("what is the number");
+    when(mockRequest.getParameter("response")).thenReturn("8888");
+    when(mockRequest.getRemoteUser()).thenReturn("1.1.1.1");
+    String expectedApiUrl = GitkitClient.GITKIT_API_BASE + "getOobConfirmationCode";
+    when(mockSender.post(eq(expectedApiUrl), anyString(), eq(headers)))
+        .thenReturn("{'otherThing':'fake-other-thing'}");
+
+    try {
+      GitkitClient.OobResponse oobResponse = gitkitClient.getOobResponse(mockRequest);
+    } catch (GitkitServerException e) {
+      assertTrue(e.getMessage().contains("{\"otherThing\":\"fake-other-thing\"}"));
+    }
+  }
+
   public void testGetOobCodeInvalidCaptchaCode() throws Exception {
     Cookie[] gitkitCookie = {new Cookie("gtoken", "fake-token")};
     HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);

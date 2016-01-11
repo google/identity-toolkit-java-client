@@ -486,8 +486,6 @@ public class GitkitClient {
       } else {
         return new OobResponse("unknown request");
       }
-    } catch (JSONException e) {
-      throw new GitkitServerException(e);
     } catch (GitkitClientException e) {
       return new OobResponse(e.getMessage());
     }
@@ -516,15 +514,19 @@ public class GitkitClient {
   }
 
   private String buildOobLink(JSONObject oobReq, String modeParam)
-      throws GitkitClientException, GitkitServerException, JSONException {
+      throws GitkitClientException, GitkitServerException {
+    JSONObject result = null;
     try {
-      JSONObject result = rpcHelper.getOobCode(oobReq);
+      result = rpcHelper.getOobCode(oobReq);
       String code = result.getString("oobCode");
       return widgetUrl + "?mode=" + modeParam + "&oobCode="
           + URLEncoder.encode(code, "UTF-8");
     } catch (UnsupportedEncodingException e) {
       // should never happen
       throw new GitkitServerException(e);
+    } catch (JSONException e) {
+      throw new GitkitServerException(e.getMessage()
+        + " Response is " + (result != null ? result.toString() : "(null)"));
     }
   }
 

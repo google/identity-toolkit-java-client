@@ -45,16 +45,10 @@ public class GitkitVerifierManager implements VerifierProvider {
 
   private static final Logger log = Logger.getLogger(GitkitVerifierManager.class.getName());
   private final RpcHelper rpcHelper;
-  private final String serverApiKey;
   private Map<String, GitkitTokenVerifier> verifiers = Maps.newHashMap();
 
   public GitkitVerifierManager(RpcHelper rpcHelper) {
-    this(rpcHelper, null);
-  }
-
-  public GitkitVerifierManager(RpcHelper rpcHelper, String serverApiKey) {
     this.rpcHelper = rpcHelper;
-    this.serverApiKey = serverApiKey;
   }
 
   @Override
@@ -72,7 +66,7 @@ public class GitkitVerifierManager implements VerifierProvider {
 
   private void initVerifiers() {
     try {
-      Map<String, String> certs = parseCertsResponse(rpcHelper.downloadCerts(serverApiKey));
+      Map<String, String> certs = parseCertsResponse(rpcHelper.downloadCerts());
       verifiers.clear();
       for (String kid : certs.keySet()) {
         verifiers.put(kid, new GitkitTokenVerifier(certs.get(kid)));

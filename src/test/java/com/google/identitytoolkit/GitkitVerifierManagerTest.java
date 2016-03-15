@@ -63,16 +63,16 @@ public class GitkitVerifierManagerTest extends TestCase {
 
   @Override
   public void setUp() {
-    verifierManager = new GitkitVerifierManager(mockRpc, "server-api-key");
+    verifierManager = new GitkitVerifierManager(mockRpc);
   }
 
   public void testFindVerifiers() throws Exception {
-    when(mockRpc.downloadCerts("server-api-key")).thenReturn(TEST_CERTS);
+    when(mockRpc.downloadCerts()).thenReturn(TEST_CERTS);
     List<Verifier> verifiers = verifierManager.findVerifier("any-issuer", "0");
     assertEquals(1, verifiers.size());
     verifiers = verifierManager.findVerifier("any-issuer", "1");
     assertEquals(1, verifiers.size());
     // should send one request only
-    verify(mockRpc).downloadCerts("server-api-key");
+    verify(mockRpc).downloadCerts();
   }
 }

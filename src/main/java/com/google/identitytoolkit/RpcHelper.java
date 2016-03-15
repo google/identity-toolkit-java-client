@@ -232,20 +232,9 @@ public class RpcHelper {
     }
   }
 
-  String downloadCerts(String serverApiKey) throws IOException {
+  String downloadCerts() throws IOException {
     String certUrl = gitkitApiUrl + "publicKeys";
     Map<String, String> headers = Maps.newHashMap();
-    if (serverApiKey != null) {
-      certUrl += "?key=" + serverApiKey;
-    } else {
-      try {
-        headers.put("Authorization", "Bearer " + getAccessToken());
-      } catch (GeneralSecurityException e) {
-        throw new IOException(e);
-      } catch (JSONException e) {
-        throw new IOException(e);
-      }
-    }
     return httpSender.get(certUrl, headers);
   }
 

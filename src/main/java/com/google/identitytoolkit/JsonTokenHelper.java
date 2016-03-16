@@ -43,10 +43,10 @@ public class JsonTokenHelper {
   public static final String ID_TOKEN_PHOTO_URL = "photo_url";
   private final JsonTokenParser parser;
 
-  public JsonTokenHelper(RpcHelper rpcHelper, String serverApiKey, String... audiences) {
+  public JsonTokenHelper(RpcHelper rpcHelper, String... audiences) {
     VerifierProviders verifierProviders = new VerifierProviders();
     verifierProviders.setVerifierProvider(SignatureAlgorithm.RS256,
-        new GitkitVerifierManager(rpcHelper, serverApiKey));
+        new GitkitVerifierManager(rpcHelper));
     parser = new JsonTokenParser(verifierProviders, new AudienceChecker(audiences));
   }
 

@@ -73,7 +73,6 @@ public class GitkitClient {
    * @param widgetUrl Url of the Gitkit widget, must starting with /.
    * @param cookieName Gitkit cookie name. Used to extract Gitkit token from incoming http request.
    * @param httpSender Concrete http sender when Gitkit client needs to call Gitkit remote API.
-   * @param serverApiKey Server side API key in Google Developer Console.
    */
   public GitkitClient(
       String clientId,
@@ -81,10 +80,8 @@ public class GitkitClient {
       InputStream keyStream,
       String widgetUrl,
       String cookieName,
-      HttpSender httpSender,
-      String serverApiKey) {
-    this(clientId, null, serviceAccountEmail, keyStream, widgetUrl, cookieName,
-          httpSender, serverApiKey);
+      HttpSender httpSender) {
+    this(clientId, null, serviceAccountEmail, keyStream, widgetUrl, cookieName, httpSender);
   }
 
   /**
@@ -98,7 +95,6 @@ public class GitkitClient {
    * @param widgetUrl Url of the Gitkit widget, must starting with /.
    * @param cookieName Gitkit cookie name. Used to extract Gitkit token from incoming http request.
    * @param httpSender Concrete http sender when Gitkit client needs to call Gitkit remote API.
-   * @param serverApiKey Server side API key in Google Developer Console.
    */
   public GitkitClient(
       String clientId,
@@ -107,10 +103,9 @@ public class GitkitClient {
       InputStream keyStream,
       String widgetUrl,
       String cookieName,
-      HttpSender httpSender,
-      String serverApiKey) {
+      HttpSender httpSender) {
     rpcHelper = new RpcHelper(httpSender, GITKIT_API_BASE, serviceAccountEmail, keyStream);
-    tokenHelper = new JsonTokenHelper(rpcHelper, serverApiKey, projectId, clientId);
+    tokenHelper = new JsonTokenHelper(rpcHelper, projectId, clientId);
     this.widgetUrl = widgetUrl;
     this.cookieName = cookieName;
   }
@@ -147,11 +142,12 @@ public class GitkitClient {
          .setProxy(proxy)
          .setGoogleClientId(configData.optString("clientId", null))
          .setProjectId(configData.optString("projectId", null))
-         .setServiceAccountEmail(configData.getString("serviceAccountEmail"))
-         .setKeyStream(new FileInputStream(configData.getString("serviceAccountPrivateKeyFile")))
-         .setWidgetUrl(configData.getString("widgetUrl"))
-         .setCookieName(configData.getString("cookieName"))
-         .setServerApiKey(configData.optString("serverApiKey", null))
+         .setServiceAccountEmail(configData.optString("serviceAccountEmail", null))
+         .setKeyStream(configData.has("serviceAccountPrivateKeyFile")
+              ? new FileInputStream(configData.getString("serviceAccountPrivateKeyFile"))
+              : null)
+         .setWidgetUrl(configData.optString("widgetUrl", null))
+         .setCookieName(configData.optString("cookieName", "gtoken"))
          .build();
   }
 
@@ -631,7 +627,6 @@ public class GitkitClient {
     private String widgetUrl;
     private String serviceAccountEmail;
     private InputStream keyStream;
-    private String serverApiKey;
     private String cookieName = "gtoken";
 
     public Builder setProxy(Proxy proxy) {
@@ -674,14 +669,9 @@ public class GitkitClient {
       return this;
     }
 
-    public Builder setServerApiKey(String serverApiKey) {
-      this.serverApiKey = serverApiKey;
-      return this;
-    }
-
     public GitkitClient build() {
       return new GitkitClient(clientId, projectId, serviceAccountEmail, keyStream, widgetUrl, cookieName,
-          httpSender, serverApiKey);
+          httpSender);
     }
   }
 

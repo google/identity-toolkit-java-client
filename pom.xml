@@ -3,7 +3,7 @@
 
   <groupId>com.google.identitytoolkit</groupId>
   <artifactId>gitkitclient</artifactId>
-  <version>1.2.6-SNAPSHOT</version>
+  <version>1.2.6</version>
   <packaging>jar</packaging>
 
   <name>gitkitclient</name>

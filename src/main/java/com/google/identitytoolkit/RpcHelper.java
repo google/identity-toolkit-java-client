@@ -177,6 +177,9 @@ public class RpcHelper {
       if (account.getHash() != null) {
         params.put("password", account.getHash());
       }
+      if (account.getPhotoUrl() != null) {
+        params.put("photoUrl", account.getPhotoUrl());
+      }
       return invokeGoogle2LegOauthApi("setAccountInfo", params);
     } catch (JSONException e) {
       throw new GitkitServerException(e);
